@@ -8,8 +8,8 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "prepare": "husky install",
@@ -21,14 +21,17 @@
     "db:reset": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:rollback && knex migrate:latest && knex seed:run"
   },
   "devDependencies": {
+    "@eslint/js": "^9.16.0",
     "@types/bun": "latest",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
     "@typescript-eslint/parser": "^8.14.0",
-    "eslint": "^9.14.0",
+    "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.13.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "typescript-eslint": "^8.17.0"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
