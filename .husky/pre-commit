@@ -1,0 +1,27 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo '🏗️ Styling, testing and building your project before committing'
+
+# Run lint-staged
+bun lint-staged ||
+(
+    echo '❌ Prettier and ESLint checks failed. Please fix the above issues.';
+    false;
+)
+
+# Check build
+bun run build ||
+(
+    echo '❌ Build failed. Please fix TypeScript errors.';
+    false;
+)
+
+# Run tests
+bun run test ||
+(
+    echo '❌ Tests failed. Please fix failing tests.';
+    false;
+)
+
+echo '✅ Commit checks passed!'
