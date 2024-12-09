@@ -24,6 +24,7 @@ const config: Knex.Config = {
     directory: '../database/seeds',
     extension: 'ts',
     stub: '../database/seed.stub',
+    timestampFilenamePrefix: true,
   },
   // debug: true,
 };
