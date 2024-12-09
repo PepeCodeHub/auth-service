@@ -1,5 +1,6 @@
-import 'dotenv/config';
 import { Knex } from 'knex';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const config: Knex.Config = {
   client: 'postgresql',
@@ -22,8 +23,9 @@ const config: Knex.Config = {
   seeds: {
     directory: '../database/seeds',
     extension: 'ts',
+    stub: '../database/seed.stub',
   },
-  debug: true,
+  // debug: true,
 };
 
 export default config;
