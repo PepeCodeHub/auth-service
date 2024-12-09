@@ -6,28 +6,32 @@ export class Migration {
   static async up(knex: Knex): Promise<void> {
     await knex.transaction(async transaction => {
       try {
-        const isTableExists = await transaction.schema.hasTable('users');
+        const isTableExists = await transaction.schema.hasTable('roles');
         if (isTableExists) {
-          migrationsLogger.warn('Table users already exists');
+          migrationsLogger.warn('Table roles already exists');
           return;
         }
 
-        await transaction.schema.createTable('users', table => {
+        await transaction.schema.createTable('roles', table => {
           table
             .uuid('id')
             .primary()
             .defaultTo(transaction.raw('gen_random_uuid()'));
-          table.string('email').unique().notNullable();
-          table.string('password').notNullable();
-          table.uuid('role_id').notNullable();
+          table.string('name').unique().notNullable();
+          table.string('description').notNullable();
+          table
+            .specificType('permission_ids', 'uuid[]')
+            .notNullable()
+            .defaultTo('{}');
+          table.boolean('is_active').defaultTo(true);
           table.timestamp('created_at').defaultTo(transaction.fn.now());
           table.timestamp('updated_at').defaultTo(transaction.fn.now());
         });
 
         await transaction.commit();
-        migrationsLogger.info('Table users created');
+        migrationsLogger.info('Table roles created');
       } catch (error) {
-        migrationsLogger.error('Table users not created');
+        migrationsLogger.error(error);
         throw error;
       }
     });
@@ -37,17 +41,17 @@ export class Migration {
   static async down(knex: Knex): Promise<void> {
     await knex.transaction(async transaction => {
       try {
-        const isTableExists = await transaction.schema.hasTable('users');
+        const isTableExists = await transaction.schema.hasTable('roles');
         if (!isTableExists) {
-          migrationsLogger.warn('Table users does not exist');
+          migrationsLogger.warn('Table roles does not exist');
           return;
         }
 
-        await transaction.schema.dropTable('users');
+        await transaction.schema.dropTable('roles');
+        migrationsLogger.info('Table roles deleted');
         await transaction.commit();
-        migrationsLogger.info('Table users deleted');
       } catch (error) {
-        migrationsLogger.error('Table users not deleted');
+        migrationsLogger.error(error);
         throw error;
       }
     });

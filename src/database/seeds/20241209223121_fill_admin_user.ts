@@ -19,6 +19,15 @@ export class Seed {
           );
         }
 
+        // Find the admin role
+        const adminRole = await transaction('roles')
+          .where({ name: 'admin' })
+          .first();
+
+        if (!adminRole) {
+          throw new Error('Admin role not found');
+        }
+
         // Check if the user already exists
         const existingUser = await transaction('users')
           .where({ email: adminEmail })
@@ -30,7 +39,7 @@ export class Seed {
           await transaction('users').insert({
             email: adminEmail,
             password: hashedPassword,
-            is_admin: true,
+            role_id: adminRole.id,
             created_at: transaction.fn.now(),
             updated_at: transaction.fn.now(),
           });
@@ -43,6 +52,7 @@ export class Seed {
         await transaction.commit();
       } catch (error) {
         await transaction.rollback();
+        migrationsLogger.error(error);
         throw error;
       }
     });
@@ -57,6 +67,7 @@ export class Seed {
         await transaction.commit();
       } catch (error) {
         await transaction.rollback();
+        migrationsLogger.error(error);
         throw error;
       }
     });

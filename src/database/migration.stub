@@ -1,18 +1,29 @@
 import { Knex } from 'knex';
-import { MigrationLogger } from '../decorators/migrationLogger';
+import { MigrationLogger, migrationsLogger, SkipRollback } from '../decorators';
 
 export class Migration {
   @MigrationLogger
   static async up(knex: Knex): Promise<void> {
     await knex.transaction(async transaction => {
-      // Add your migration logic here
+      try {
+        // Add your migration logic here
+      } catch (error) {
+        migrationsLogger.error(error);
+        throw error;
+      }
     });
   }
 
   @MigrationLogger
+  @SkipRollback
   static async down(knex: Knex): Promise<void> {
     await knex.transaction(async transaction => {
-      // Add your rollback logic here
+      try {
+        // Add your rollback logic here
+      } catch (error) {
+        migrationsLogger.error(error);
+        throw error;
+      }
     });
   }
 }
