@@ -1,7 +1,6 @@
 {
   "name": "auth-service",
   "module": "index.ts",
-  "type": "module",
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",
@@ -13,12 +12,13 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "prepare": "husky install",
-    "db:migrate:make": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:make --knexfile ./src/config/knexfile.ts -x ts",
-    "db:seed:make": "NODE_OPTIONS='--loader ts-node/esm' knex seed:make --knexfile ./src/config/knexfile.ts -x ts",
-    "db:migrate": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:latest --knexfile ./src/config/knexfile.ts",
-    "db:rollback": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:rollback",
-    "db:seed": "NODE_OPTIONS='--loader ts-node/esm' knex seed:run --knexfile ./src/config/knexfile.ts",
-    "db:reset": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:rollback && knex migrate:latest && knex seed:run"
+    "knex": "NODE_OPTIONS='--loader ts-node/esm' knex --knexfile ./src/config/knexfile.ts",
+    "pg:migrate:make": "bun run knex migrate:make -x ts",
+    "pg:seed:make": "bun run knex seed:make -x ts",
+    "pg:migrate": "bun run knex migrate:latest",
+    "pg:rollback": "bun run knex migrate:rollback",
+    "pg:seed": "bun run knex seed:run",
+    "pg:reset": "bun run knex migrate:rollback && bun run knex migrate:latest && bun run knex seed:run"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
@@ -42,7 +42,8 @@
     "dotenv": "^16.4.5",
     "knex": "^3.1.0",
     "pg": "^8.13.1",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "winston": "^3.17.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
