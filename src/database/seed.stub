@@ -1,0 +1,30 @@
+import { Knex } from "knex";
+import { MigrationLogger } from '../decorators';
+
+export class Seed {
+    @MigrationLogger
+    static async seed(knex: Knex): Promise<void> {
+        await knex.transaction(async transaction => {
+            try {
+                // Add your seed logic here
+            } catch (error) {
+                await transaction.rollback();
+                throw error;
+            }
+        });
+    }
+
+    @MigrationLogger
+    static async clear(knex: Knex): Promise<void> {
+        await knex.transaction(async transaction => {
+            try {
+                // Add your clear logic here
+            } catch (error) {
+                await transaction.rollback();
+                throw error;
+            }
+        });
+    }
+}
+
+export const { seed, clear } = Seed;

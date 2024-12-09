@@ -1,9 +1,20 @@
 import { Knex } from 'knex';
+import { MigrationLogger } from '../decorators/migrationLogger';
 
-export async function up(knex: Knex): Promise<void> {
-  // Add your migration logic here
+export class Migration {
+  @MigrationLogger
+  static async up(knex: Knex): Promise<void> {
+    await knex.transaction(async transaction => {
+      // Add your migration logic here
+    });
+  }
+
+  @MigrationLogger
+  static async down(knex: Knex): Promise<void> {
+    await knex.transaction(async transaction => {
+      // Add your rollback logic here
+    });
+  }
 }
 
-export async function down(knex: Knex): Promise<void> {
-  // Add your rollback logic here
-}
+export const { up, down } = Migration;
