@@ -1,10 +1,8 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
+export PATH="/Users/f3an/.bun/bin:$PATH"
 echo '🏗️ Styling, testing and building your project before committing'
 
 # Run lint-staged
-bun lint-staged ||
+bun run lint-staged ||
 (
     echo '❌ Prettier and ESLint checks failed. Please fix the above issues.';
     false;
