@@ -5,23 +5,28 @@ export class Migration {
   @MigrationLogger
   static async up(knex: Knex): Promise<void> {
     await knex.transaction(async transaction => {
-      const isTableExists = await transaction.schema.hasTable('users');
-      if (isTableExists) {
-        migrationsLogger.warn('Table users already exists');
-        return;
-      }
+      try {
+        const isTableExists = await transaction.schema.hasTable('users');
+        if (isTableExists) {
+          migrationsLogger.warn('Table users already exists');
+          return;
+        }
 
-      await transaction.schema.createTable('users', table => {
-        table
-          .uuid('id')
-          .primary()
-          .defaultTo(transaction.raw('gen_random_uuid()'));
-        table.string('email').unique().notNullable();
-        table.string('password').notNullable();
-        table.boolean('is_admin').defaultTo(false);
-        table.timestamp('created_at').defaultTo(transaction.fn.now());
-        table.timestamp('updated_at').defaultTo(transaction.fn.now());
-      });
+        await transaction.schema.createTable('users', table => {
+          table
+            .uuid('id')
+            .primary()
+            .defaultTo(transaction.raw('gen_random_uuid()'));
+          table.string('email').unique().notNullable();
+          table.string('password').notNullable();
+          table.boolean('is_admin').defaultTo(false);
+          table.timestamp('created_at').defaultTo(transaction.fn.now());
+          table.timestamp('updated_at').defaultTo(transaction.fn.now());
+        });
+      } catch (error) {
+        migrationsLogger.error('Table users not created');
+        throw error;
+      }
     });
   }
 
