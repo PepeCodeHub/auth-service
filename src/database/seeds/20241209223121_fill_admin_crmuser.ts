@@ -29,14 +29,14 @@ export class Seed {
         }
 
         // Check if the user already exists
-        const existingUser = await transaction('users')
+        const existingUser = await transaction('crmusers')
           .where({ email: adminEmail })
           .first();
 
         if (!existingUser) {
           const hashedPassword = await bcrypt.hash(adminPassword, 10); // Hash the password
 
-          await transaction('users').insert({
+          await transaction('crmusers').insert({
             email: adminEmail,
             password: hashedPassword,
             role_id: adminRole.id,
@@ -44,9 +44,9 @@ export class Seed {
             updated_at: transaction.fn.now(),
           });
 
-          migrationsLogger.info('First admin user created');
+          migrationsLogger.info('First admin crmuser created');
         } else {
-          migrationsLogger.warn('First user already exists');
+          migrationsLogger.warn('First crmuser already exists');
         }
 
         await transaction.commit();
@@ -63,7 +63,9 @@ export class Seed {
     await knex.transaction(async transaction => {
       try {
         // Add your clear logic here
-        await transaction('users').delete();
+        await transaction('crmuser')
+          .where({ email: process.env.ADMIN_EMAIL })
+          .del();
         await transaction.commit();
       } catch (error) {
         await transaction.rollback();
