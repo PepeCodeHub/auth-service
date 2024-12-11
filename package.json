@@ -2,8 +2,8 @@
   "name": "auth-service",
   "module": "index.ts",
   "scripts": {
-    "start": "bun run src/index.ts",
-    "dev": "bun --watch run src/index.ts",
+    "start": "bun run index.ts",
+    "dev": "bun --watch run index.ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist",
@@ -15,8 +15,8 @@
     "knex": "NODE_OPTIONS='--loader ts-node/esm' knex --knexfile ./src/config/knexfile.ts",
     "pg:migrate:make": "bun run knex migrate:make -x ts",
     "pg:seed:make": "bun run knex seed:make -x ts",
-    "pg:migrate": "bun run knex migrate:latest",
-    "pg:rollback": "bun run knex migrate:rollback",
+    "pg:migrate": "bun run knex migrate:latest --verbose",
+    "pg:rollback": "bun run knex migrate:rollback --verbose",
     "pg:seed": "bun run knex seed:run",
     "pg:reset": "bun run knex migrate:rollback && bun run knex migrate:latest && bun run knex seed:run"
   },
@@ -31,18 +31,21 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "typescript-eslint": "^8.17.0"
+    "typescript-eslint": "^8.17.0",
+    "ts-node": "^10.9.2"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@types/amqplib": "^0.10.6",
     "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7",
+    "amqplib": "^0.10.5",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
-    "pg": "^8.13.1",
-    "ts-node": "^10.9.2",
     "winston": "^3.17.0"
   },
   "lint-staged": {
