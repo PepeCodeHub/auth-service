@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { MigrationLogger, migrationsLogger } from '../decorators';
+import { MigrationLogger, migrationsLogger } from '../../decorators';
 import * as bcrypt from 'bcrypt';
 import * as dotenv from 'dotenv';
 

@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { MigrationLogger } from '../decorators';
+import { MigrationLogger } from '../../decorators';
 
 export class Seed {
     @MigrationLogger
