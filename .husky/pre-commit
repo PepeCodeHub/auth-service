@@ -4,7 +4,7 @@ echo '🏗️ Styling, testing and building your project before committing'
 # Run lint-staged
 bun run lint-staged ||
 (
-    echo '❌ Prettier and ESLint checks failed. Please fix the above issues.';
+    echo '❌ ESLint checks failed. Please fix the above issues.';
     false;
 )
 
