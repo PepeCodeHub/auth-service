@@ -29,28 +29,28 @@ export class RabbitMQService {
     // const token = headers?.authorization?.split(' ')[1];
 
     switch (action) {
-      case HttpMethod.POST:
-        switch (path) {
-          case '/login':
-            return authService.login(body);
-          case '/api/auth/register':
-            return authService.register(body);
-          default:
-            return {
-              statusCode: 404,
-              data: {
-                message: `Path ${path} not found`,
-              },
-            };
-        }
-
+    case HttpMethod.POST:
+      switch (path) {
+      case '/login':
+        return authService.login(body);
+      case '/api/auth/register':
+        return authService.register(body);
       default:
         return {
-          statusCode: 405,
+          statusCode: 404,
           data: {
-            message: `Method ${action} not allowed`,
+            message: `Path ${path} not found`,
           },
         };
+      }
+
+    default:
+      return {
+        statusCode: 405,
+        data: {
+          message: `Method ${action} not allowed`,
+        },
+      };
     }
   }
 
