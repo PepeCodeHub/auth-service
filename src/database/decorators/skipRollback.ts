@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { migrationsLogger } from './migrationLogger';
 
 export const SkipRollback = (
