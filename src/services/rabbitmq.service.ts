@@ -28,30 +28,41 @@ export class RabbitMQService {
     const { action, path, body } = request;
     // const token = headers?.authorization?.split(' ')[1];
 
-    switch (action) {
-    case HttpMethod.POST:
-      switch (path) {
-      case '/login':
-        return authService.login(body);
-      case '/api/auth/register':
-        return authService.register(body);
+    if (path) {
+      const basePath = '/api/auth';
+
+      switch (action) {
+      case HttpMethod.POST:
+        switch (path.replace(basePath, '')) {
+        case '/login':
+          return authService.login(body);
+        case '/register':
+          return authService.register(body);
+        default:
+          return {
+            statusCode: 404,
+            data: {
+              message: `Path ${path} not found`,
+            },
+          };
+        }
+    
       default:
         return {
-          statusCode: 404,
+          statusCode: 405,
           data: {
-            message: `Path ${path} not found`,
+            message: `Method ${action} not allowed`,
           },
         };
       }
-
-    default:
-      return {
-        statusCode: 405,
-        data: {
-          message: `Method ${action} not allowed`,
-        },
-      };
     }
+
+    return {
+      statusCode: 400,
+      data: {
+        message: 'Invalid request',
+      },
+    };
   }
 
   async consume(): Promise<void> {
