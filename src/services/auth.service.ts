@@ -11,9 +11,8 @@ const SALT_ROUNDS = 10;
 export class AuthService {
   async register(userDto: UserDTO): Promise<AuthResponse> {
     try {
-      const existingUser = await pg_connector<User>('users')
-        .where({ email: userDto.email })
-        .first();
+      const existingUser = await pg_connector('users').where({ email: userDto.email }).first();
+
       if (existingUser) {
         return {
           statusCode: 400,
@@ -32,12 +31,21 @@ export class AuthService {
 
       await pg_connector<User>('users').insert(user);
 
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
         expiresIn: '24h',
       });
 
+      const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+        expiresIn: '7d',
+      });
+
+      await pg_connector('refresh_tokens').insert({
+        user_id: user.id,
+        token: refreshToken,
+      });
+
       return {
-        data: { token },
+        data: { accessToken, refreshToken },
         statusCode: 200,
       };
     } catch (error) {
@@ -53,20 +61,51 @@ export class AuthService {
   }
 
   async login(userDto: UserDTO): Promise<AuthResponse> {
-    console.log('🚀 ~ AuthService ~ login ~ userDto:', userDto);
-    // const user = users.find(u => u.email === userDto.email);
-    // if (!user) {
-    //   throw new Error('Invalid credentials');
-    // }
+    const existingUser = await pg_connector<User>('users')
+      .where({ email: userDto.email })
+      .first();
 
-    // const isValid = await bcrypt.compare(userDto.password, user.password);
-    // if (!isValid) {
-    //   throw new Error('Invalid credentials');
-    // }
+    if (!existingUser) {
+      throw new Error('Invalid credentials');
+    }
 
-    // const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+    const isValid = await bcrypt.compare(userDto.password, existingUser.password);
+    if (!isValid) {
+      throw new Error('Invalid credentials');
+    }
+
+    const accessToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
+      expiresIn: '24h',
+    });
+
+    const refreshToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
+      expiresIn: '7d',
+    });
+    
     return {
-      // data: { token },
+      data: { accessToken, refreshToken },
+      statusCode: 200,
+    };
+  }
+
+  async refresh(refreshToken: string): Promise<AuthResponse> {
+    const existingToken = await pg_connector('refresh_tokens').where({ token: refreshToken }).first();
+
+    if (!existingToken) {
+      return {
+        statusCode: 401,
+        data: {
+          message: 'Invalid token',
+        },
+      };
+    }
+
+    const accessToken = jwt.sign({ userId: existingToken.user_id }, JWT_SECRET, {
+      expiresIn: '24h',
+    });
+
+    return {
+      data: { accessToken },
       statusCode: 200,
     };
   }
