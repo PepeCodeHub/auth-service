@@ -7,6 +7,6 @@ export const SkipRollback = (
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   descriptor.value = async function (...args: any[]) {
-    migrationsLogger.info(`Rollback not implemented...`);
+    migrationsLogger.info('Rollback not implemented...');
   };
 };

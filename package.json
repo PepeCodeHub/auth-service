@@ -1,7 +1,6 @@
 {
   "name": "auth-service",
   "module": "index.ts",
-  "type": "commonjs",
   "scripts": {
     "start": "bun run index.ts",
     "dev": "bun --watch run index.ts",
