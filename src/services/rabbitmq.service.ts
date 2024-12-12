@@ -1,7 +1,7 @@
 import amqp, { Channel, Connection } from 'amqplib';
 import { logger } from '../utils/logger';
 import { HttpMethod, AuthRequest, AuthResponse } from '../types/http.types';
-import { rabbitmqConfig } from '../config/rabbitmq.config';
+import { rabbitmqConfig } from '../config/rabbitmq-config';
 import { authService } from './auth.service';
 
 export class RabbitMQService {
