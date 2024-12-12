@@ -1,6 +1,7 @@
 {
   "name": "auth-service",
   "module": "index.ts",
+  "type": "commonjs",
   "scripts": {
     "start": "bun run index.ts",
     "dev": "bun --watch run index.ts",
@@ -46,6 +47,7 @@
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
+    "pg": "^8.13.1",
     "winston": "^3.17.0"
   },
   "lint-staged": {
