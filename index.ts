@@ -1,4 +1,4 @@
-import { rabbitMQService } from './src/services/rabbitmq.service';
+import { rabbitMQService } from './src/services/rabbitmq-service';
 import { rabbitmqConfig } from './src/config/rabbitmq-config';
 import { logger } from './src/utils/logger';
 

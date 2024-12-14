@@ -1,0 +1,46 @@
+import { Db, MongoClient } from 'mongodb';
+import { MigrationInterface } from 'mongo-migrate-ts';
+import {
+  MigrationLogger,
+  migrationsLogger,
+  SkipRollback
+} from '../../decorators';
+
+const COLLECTION_NAME = 'your_collection_name';
+
+export class TemplateMigration implements MigrationInterface {
+  @MigrationLogger
+  public async up(db: Db, client: MongoClient): Promise<void | never> {
+    const clientSession = client.startSession();
+    try {
+      await clientSession.withTransaction(async () => {
+        // Your migration code here
+      });
+    } catch (e) {
+      migrationsLogger.error(
+        `Error in migration ${this.constructor.name}: ${e}`,
+      );
+      throw e;
+    } finally {
+      await clientSession.endSession();
+    }
+  }
+
+  @MigrationLogger
+  // @SkipRollback
+  public async down(db: Db, client: MongoClient): Promise<void | never> {
+    const clientSession = client.startSession();
+    try {
+      await clientSession.withTransaction(async () => {
+        // Your migration code here
+      });
+    } catch (e) {
+      migrationsLogger.error(
+        `Error in migration ${this.constructor.name}: ${e}`,
+      );
+      throw e;
+    } finally {
+      await clientSession.endSession();
+    }
+  }
+}

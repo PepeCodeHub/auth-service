@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User, UserDTO } from '../types/user.types';
 import { AuthResponse } from '../types/http.types';
-import { pg_connector } from '../database/PostgreSQL/pg_connector';
+import { pg_connector } from '../database/PostgreSQL/pg-connector';
 import { logger } from '../utils/logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret';

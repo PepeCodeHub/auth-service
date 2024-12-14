@@ -18,7 +18,12 @@
     "pg:migrate": "bun run knex migrate:latest --verbose",
     "pg:rollback": "bun run knex migrate:rollback --verbose",
     "pg:seed": "bun run knex seed:run",
-    "pg:reset": "bun run knex migrate:rollback && bun run knex migrate:latest && bun run knex seed:run"
+    "pg:reset": "bun run knex migrate:rollback && bun run knex migrate:latest && bun run knex seed:run",
+    "mongo:migrate:make": "bunx ts-node ./src/config/mongo-migrate-cli.ts new -t ./src/database/MongoDB/mingration.stub",
+    "mongo:migrate": "npx ts-node mongo-migrate-cli.ts up",
+    "mongo:rollback": "npx ts-node mongo-migrate-cli.ts down -l",
+    "mongo:status": "npx ts-node mongo-migrate-cli.ts status",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
