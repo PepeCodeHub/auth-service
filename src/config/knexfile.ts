@@ -16,14 +16,14 @@ const config: Knex.Config = {
   },
   migrations: {
     tableName: 'knex_migrations',
-    directory: '../database/postgre/migrations',
+    directory: '../database/PostgreSQL/migrations',
     extension: 'ts',
-    stub: '../database/postgre/migration.stub',
+    stub: '../database/PostgreSQL/migration.stub',
   },
   seeds: {
-    directory: '../database/postgre/seeds',
+    directory: '../database/PostgreSQL/seeds',
     extension: 'ts',
-    stub: '../database/postgre/seed.stub',
+    stub: '../database/PostgreSQL/seed.stub',
     timestampFilenamePrefix: true,
   },
   // debug: true,
