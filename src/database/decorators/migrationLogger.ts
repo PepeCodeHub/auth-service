@@ -10,7 +10,7 @@ export const migrationsLogger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(winston.format.timestamp(), customFormat),
   transports: [
-    new winston.transports.File({ filename: '../../logs/migrations.log' }),
+    new winston.transports.File({ filename: path.resolve(__dirname, '../logs/migrations.log') }),
     new winston.transports.Console(),
   ],
 });
