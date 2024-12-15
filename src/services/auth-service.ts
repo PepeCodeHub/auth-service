@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User, UserDTO } from '../types/user.types';
 import { AuthResponse } from '../types/http.types';
-import { pg_connector } from '../database/PostgreSQL/pg-connector';
+import { pgConnector } from '../database/PostgreSQL/pg-connector';
 import { logger } from '../utils/logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret';
@@ -11,7 +11,7 @@ const SALT_ROUNDS = 10;
 export class AuthService {
   async register(userDto: UserDTO): Promise<AuthResponse> {
     try {
-      const existingUser = await pg_connector('users').where({ email: userDto.email }).first();
+      const existingUser = await pgConnector('users').where({ email: userDto.email }).first();
 
       if (existingUser) {
         return {
@@ -29,9 +29,9 @@ export class AuthService {
         password: hashedPassword,
       };
 
-      await pg_connector<User>('users').insert(user);
+      await pgConnector<User>('users').insert(user);
 
-      const user_ = await pg_connector<User>('users').where({ email: user.email }).first();
+      const user_ = await pgConnector<User>('users').where({ email: user.email }).first();
       if (!user_) {
         throw new Error('User not found');
       }
@@ -44,7 +44,7 @@ export class AuthService {
         expiresIn: '7d',
       });
 
-      await pg_connector('refresh_tokens').insert({
+      await pgConnector('refresh_tokens').insert({
         user_id: user_.id,
         token: refreshToken,
       });
@@ -67,7 +67,7 @@ export class AuthService {
 
   async login(userDto: UserDTO): Promise<AuthResponse> {
     try {
-      const existingUser = await pg_connector<User>('users')
+      const existingUser = await pgConnector<User>('users')
         .where({ email: userDto.email })
         .first();
 
@@ -105,7 +105,7 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string): Promise<AuthResponse> {
-    const existingToken = await pg_connector('refresh_tokens').where({ token: refreshToken }).first();
+    const existingToken = await pgConnector('refresh_tokens').where({ token: refreshToken }).first();
 
     if (!existingToken) {
       return {
@@ -146,7 +146,7 @@ export class AuthService {
 
   async revokeTokenById(tokenId: string): Promise<void> {
     try {
-      await pg_connector('refresh_tokens').where({ id: tokenId }).delete();
+      await pgConnector('refresh_tokens').where({ id: tokenId }).delete();
     } catch (error) {
       logger.error('Error revoking token:', error);
     }
@@ -154,7 +154,7 @@ export class AuthService {
 
   async revokeAllTokens(userId: string): Promise<void> {
     try {
-      await pg_connector('refresh_tokens').where({ user_id: userId }).delete();
+      await pgConnector('refresh_tokens').where({ user_id: userId }).delete();
     } catch (error) {
       logger.error('Error revoking all tokens:', error);
     }
@@ -163,7 +163,7 @@ export class AuthService {
   async getUserFromToken(token: string): Promise<User | null> {
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-      const user = await pg_connector<User>('users').where({ id: decoded.userId }).first();
+      const user = await pgConnector<User>('users').where({ id: decoded.userId }).first();
 
       return user || null;
     } catch (error) {
