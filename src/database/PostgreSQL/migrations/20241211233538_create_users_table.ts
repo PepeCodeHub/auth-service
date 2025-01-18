@@ -30,6 +30,11 @@ export class Migration {
           table.string('country').defaultTo('');
           table.timestamp('created_at').defaultTo(transaction.fn.now());
           table.timestamp('updated_at').defaultTo(transaction.fn.now());
+          table.timestamp('deleted_at').defaultTo(null);
+          table.boolean('is_verified').defaultTo(false);
+          table.boolean('is_active').defaultTo(true);
+          table.boolean('is_deleted').defaultTo(false);
+          table.string('avatar').defaultTo('');
         });
 
         await transaction.commit();
