@@ -11,6 +11,15 @@ const SALT_ROUNDS = 10;
 export class AuthService {
   async register(userDto: UserDTO): Promise<AuthResponse> {
     try {
+      if (!userDto.email || !userDto.password) {
+        return {
+          statusCode: 400,
+          data: {
+            message: 'Email and password are required',
+          },
+        };
+      }
+
       const existingUser = await pgConnector('users').where({ email: userDto.email }).first();
 
       if (existingUser) {
@@ -67,17 +76,36 @@ export class AuthService {
 
   async login(userDto: UserDTO): Promise<AuthResponse> {
     try {
+      if (!userDto.email || !userDto.password) {
+        return {
+          statusCode: 400,
+          data: {
+            message: 'Email and password are required',
+          },
+        };
+      }
+
       const existingUser = await pgConnector<User>('users')
         .where({ email: userDto.email })
         .first();
 
       if (!existingUser) {
-        throw new Error('Invalid credentials');
+        return {
+          statusCode: 401,
+          data: {
+            message: 'Invalid Email or Password',
+          },
+        };
       }
 
       const isValid = await bcrypt.compare(userDto.password, existingUser.password);
       if (!isValid) {
-        throw new Error('Invalid credentials');
+        return {
+          statusCode: 401,
+          data: {
+            message: 'Invalid Email or Password',
+          },
+        };
       }
 
       const accessToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
@@ -96,34 +124,118 @@ export class AuthService {
       logger.error('Error logging in user:', error);
 
       return {
-        statusCode: 401,
+        statusCode: 500,
         data: {
-          message: 'Invalid credentials',
+          message: 'Internal server error',
         },
       };
     }
   }
 
   async refresh(refreshToken: string): Promise<AuthResponse> {
-    const existingToken = await pgConnector('refresh_tokens').where({ token: refreshToken }).first();
-
-    if (!existingToken) {
+    try {
+      if (!refreshToken) {
+        return {
+          statusCode: 400,
+          data: {
+            message: 'Refresh token is required',
+          },
+        };
+      }
+  
+      const existingToken = await pgConnector('refresh_tokens').where({ token: refreshToken }).first();
+  
+      if (!existingToken) {
+        return {
+          statusCode: 401,
+          data: {
+            message: 'Invalid token',
+          },
+        };
+      }
+  
+      const accessToken = jwt.sign({ userId: existingToken.user_id }, JWT_SECRET, {
+        expiresIn: '24h',
+      });
+  
       return {
-        statusCode: 401,
+        data: { accessToken },
+        statusCode: 200,
+      };
+    } catch (error) {
+      logger.error('Error refreshing token:', error);
+
+      return {
+        statusCode: 500,
         data: {
-          message: 'Invalid token',
+          message: 'Internal server error',
         },
       };
     }
+  }
 
-    const accessToken = jwt.sign({ userId: existingToken.user_id }, JWT_SECRET, {
-      expiresIn: '24h',
-    });
+  async logout(refreshToken: string): Promise<AuthResponse> {
+    try {
+      if (!refreshToken) {
+        return {
+          statusCode: 400,
+          data: {
+            message: 'Refresh token is required',
+          },
+        };
+      }
+  
+      const existingToken = await pgConnector('refresh_tokens').where({ token: refreshToken }).first();
+  
+      if (!existingToken) {
+        return {
+          statusCode: 401,
+          data: {
+            message: 'Invalid token',
+          },
+        };
+      }
+  
+      await pgConnector('refresh_tokens').where({ token: refreshToken }).delete();
+  
+      return {
+        statusCode: 200,
+        data: {
+          message: 'Token revoked',
+        },
+      };
+    } catch (error) {
+      logger.error('Error logging out user:', error);
 
-    return {
-      data: { accessToken },
-      statusCode: 200,
-    };
+      return {
+        statusCode: 500,
+        data: {
+          message: 'Internal server error',
+        },
+      };
+    }
+  }
+
+  async banUser(userId: string): Promise<AuthResponse> {
+    try {
+      await pgConnector('users').where({ id: userId }).update({ is_active: true });
+
+      return {
+        statusCode: 200,
+        data: {
+          message: 'User banned',
+        },
+      };
+    } catch (error) {
+      logger.error('Error banning user:', error);
+
+      return {
+        statusCode: 500,
+        data: {
+          message: 'Internal server error',
+        },
+      };
+    }
   }
 
   async verifyToken(token: string): Promise<boolean> {

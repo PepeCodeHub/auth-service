@@ -38,6 +38,27 @@ export class RabbitMQService {
           return authService.login(body);
         case '/register':
           return authService.register(body);
+        case '/logout':
+          return authService.logout(body);
+          // case '/refresh':
+          //   return authService.refresh(body);
+          // case '/verifyToken':
+          //   return authService.verify(body);
+          // case '/revoke':
+          //   return authService.revoke(body);
+          // case '/revokeAll':
+          //   return authService.revokeAll(body);
+          // case '/getUser':
+          //   return authService.getUser(body);
+          // case '/getUserFromToken':
+          //   return authService.getUserFromToken(body);
+          // case '/decodeToken':
+          //   return authService.decodeToken(body);
+          // case '/revokeTokenById':
+          //   return authService.revokeTokenById(body);
+
+        
+        
         default:
           return {
             statusCode: 404,
