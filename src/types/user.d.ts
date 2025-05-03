@@ -18,4 +18,5 @@ export interface User {
 export interface UserDTO {
   email: string;
   password: string;
+  isCrmUser: true | undefined
 }

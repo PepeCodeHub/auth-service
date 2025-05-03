@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User, UserDTO } from '@types';
-import { AuthResponse } from '@types';
+import type { User, UserDTO, AuthResponse, CRMUser } from '@types';
 import { pgConnector } from '@database';
 import { logger } from '@utils';
 
@@ -58,6 +57,11 @@ export class AuthService {
         token: refreshToken,
       });
 
+      await pgConnector('access_tokens').insert({
+        token: accessToken,
+        user_id: user_.id,
+      });
+
       return {
         data: { accessToken, refreshToken },
         statusCode: 200,
@@ -85,11 +89,59 @@ export class AuthService {
         };
       }
 
-      const existingUser = await pgConnector<User>('users')
+      if (!userDto.isCrmUser) {
+        const existingUser = await pgConnector<User>('users')
+          .where({ email: userDto.email })
+          .first();
+
+        if (!existingUser) {
+          return {
+            statusCode: 401,
+            data: {
+              message: 'Invalid Email or Password',
+            },
+          };
+        }
+
+        const isValid = await bcrypt.compare(userDto.password, existingUser.password);
+       
+        if (!isValid) {
+          return {
+            statusCode: 401,
+            data: {
+              message: 'Invalid Email or Password',
+            },
+          };
+        }
+
+        const accessToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
+          expiresIn: '24h',
+        });
+  
+        const refreshToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
+          expiresIn: '7d',
+        });
+  
+        await pgConnector('refresh_tokens').insert({
+          user_id: existingUser.id,
+          token: refreshToken,
+        });
+        await pgConnector('access_tokens').insert({
+          token: accessToken,
+          user_id: existingUser.id,
+        });
+
+        return {
+          data: { accessToken, refreshToken },
+          statusCode: 200,
+        };
+      }
+
+      const existingCrmUser = await pgConnector<CRMUser>('crmusers')
         .where({ email: userDto.email })
         .first();
 
-      if (!existingUser) {
+      if (!existingCrmUser) {
         return {
           statusCode: 401,
           data: {
@@ -97,8 +149,7 @@ export class AuthService {
           },
         };
       }
-
-      const isValid = await bcrypt.compare(userDto.password, existingUser.password);
+      const isValid = await bcrypt.compare(userDto.password, existingCrmUser.password);
       if (!isValid) {
         return {
           statusCode: 401,
@@ -108,14 +159,14 @@ export class AuthService {
         };
       }
 
-      const accessToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
+      const accessToken = jwt.sign({ userId: existingCrmUser.id }, JWT_SECRET, {
         expiresIn: '24h',
       });
 
-      const refreshToken = jwt.sign({ userId: existingUser.id }, JWT_SECRET, {
+      const refreshToken = jwt.sign({ userId: existingCrmUser.id }, JWT_SECRET, {
         expiresIn: '7d',
       });
-    
+
       return {
         data: { accessToken, refreshToken },
         statusCode: 200,
