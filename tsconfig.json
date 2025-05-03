@@ -10,9 +10,57 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "declaration": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@config": [
+        "./config/index"
+      ],
+      "@config/*": [
+        "./config/*"
+      ],
+      "@types": [
+        "./types/index"
+      ],
+      "@types/*": [
+        "./types/*"
+      ],
+      "@services": [
+        "./services/index"
+      ],
+      "@services/*": [
+        "./services/*"
+      ],
+      "@utils": [
+        "./utils/index"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@constants": [
+        "./constants/index"
+      ],
+      "@constants/*": [
+        "./constants/*"
+      ],
+      "@database": [
+        "./database/index"
+      ],
+      "@database/*": [
+        "./database/*"
+      ],
+    },
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ]
   },
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+    "types/**/*.d.ts",
   ],
   "exclude": [
     "node_modules",

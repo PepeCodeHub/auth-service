@@ -1,0 +1,1 @@
+export { mongoConnector } from './connector';

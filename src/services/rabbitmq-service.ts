@@ -1,7 +1,8 @@
 import amqp, { Channel, Connection } from 'amqplib';
-import { logger } from '../utils/logger';
-import { HttpMethod, AuthRequest, AuthResponse } from '../types/http.types';
-import { rabbitmqConfig } from '../config/rabbitmq-config';
+import { logger } from '@utils';
+import type { AuthRequest, AuthResponse } from '@types';
+import { HttpMethod } from '@constants';
+import { rabbitmqConfig } from '@config/rabbitmq-config';
 import { authService } from './auth-service';
 
 export class RabbitMQService {
@@ -40,25 +41,6 @@ export class RabbitMQService {
           return authService.register(body);
         case '/logout':
           return authService.logout(body);
-          // case '/refresh':
-          //   return authService.refresh(body);
-          // case '/verifyToken':
-          //   return authService.verify(body);
-          // case '/revoke':
-          //   return authService.revoke(body);
-          // case '/revokeAll':
-          //   return authService.revokeAll(body);
-          // case '/getUser':
-          //   return authService.getUser(body);
-          // case '/getUserFromToken':
-          //   return authService.getUserFromToken(body);
-          // case '/decodeToken':
-          //   return authService.decodeToken(body);
-          // case '/revokeTokenById':
-          //   return authService.revokeTokenById(body);
-
-        
-        
         default:
           return {
             statusCode: 404,
@@ -66,6 +48,7 @@ export class RabbitMQService {
               message: `Path ${path} not found`,
             },
           };
+
         }
     
       default:
@@ -114,8 +97,12 @@ export class RabbitMQService {
 
   async close(): Promise<void> {
     try {
-      await this.channel?.close();
-      await this.connection?.close();
+      if (this.channel && this.channel.close) {
+        await this.channel.close();
+      }
+      if (this.connection && this.connection.close) {
+        await this.connection.close();
+      }
     } catch (error) {
       logger.error('Error closing RabbitMQ connection:', error);
       throw error;
