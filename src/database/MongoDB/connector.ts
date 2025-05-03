@@ -1,7 +1,7 @@
 import { logger } from '@utils';
 import mongoose from 'mongoose';
 
-export const mongoConnector = mongoose.createConnection(process.env.MONGODB_URI as string, {
+export const mongoConnector = mongoose.createConnection(process.env.MONGO_DB_URL as string, {
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
   family: 4,
