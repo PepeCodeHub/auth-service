@@ -1,2 +1,2 @@
 export * from './auth-service';
-export { rabbitMQService } from './rabbitmq-service';
+export * from './rabbitmq-service';

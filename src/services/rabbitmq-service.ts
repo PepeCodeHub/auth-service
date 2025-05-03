@@ -2,7 +2,7 @@ import amqp, { Channel, Connection } from 'amqplib';
 import { logger } from '@utils';
 import type { AuthRequest, AuthResponse } from '@types';
 import { HttpMethod } from '@constants';
-import { rabbitmqConfig } from '@config/rabbitmq-config';
+import { rabbitmqConfig } from '@config';
 import { authService } from './auth-service';
 
 export class RabbitMQService {
@@ -96,16 +96,28 @@ export class RabbitMQService {
   }
 
   async close(): Promise<void> {
-    try {
-      if (this.channel && this.channel.close) {
+    if (this.channel) {
+      try {
         await this.channel.close();
+        logger.info('RabbitMQ channel closed');
+      } catch (error) {
+        if (!(error instanceof Error) || !error.message.includes('Channel closing')) {
+          logger.error('Error closing RabbitMQ channel:', error);
+        }
+      } finally {
+        this.channel = null;
       }
-      if (this.connection && this.connection.close) {
+    }
+
+    if (this.connection) {
+      try {
         await this.connection.close();
+        logger.info('RabbitMQ connection closed');
+      } catch (error) {
+        logger.error('Error closing RabbitMQ connection:', error);
+      } finally {
+        this.connection = null;
       }
-    } catch (error) {
-      logger.error('Error closing RabbitMQ connection:', error);
-      throw error;
     }
   }
 }

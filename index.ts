@@ -1,5 +1,5 @@
 import { rabbitMQService } from '@services';
-import { rabbitmqConfig } from '@config/rabbitmq-config';
+import { rabbitmqConfig } from '@config';
 import { logger } from '@utils';
 
 async function connectWithRetry(attempt = 5): Promise<void> {
