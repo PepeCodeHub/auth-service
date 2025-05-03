@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User, UserDTO } from '../types/user.types';
-import { AuthResponse } from '../types/http.types';
-import { pgConnector } from '../database/PostgreSQL/pg-connector';
-import { logger } from '../utils/logger';
+import { User, UserDTO } from '@types';
+import { AuthResponse } from '@types';
+import { pgConnector } from '@database';
+import { logger } from '@utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret';
 const SALT_ROUNDS = 10;
