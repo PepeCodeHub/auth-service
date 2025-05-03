@@ -3,7 +3,7 @@ import { MigrationInterface } from 'mongo-migrate-ts';
 import {
   MigrationLogger,
   migrationsLogger
-} from '@decorators';
+} from '../../decorators';
 
 const LoginCollectionName = 'login';
 

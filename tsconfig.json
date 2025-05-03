@@ -51,9 +51,6 @@
       ],
       "@database/*": [
         "./database/*"
-      ],
-      "@decorators": [
-        "./database/decorators/index"
       ]
     },
     "typeRoots": [

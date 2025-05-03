@@ -4,7 +4,7 @@ import {
   MigrationLogger,
   migrationsLogger,
   SkipRollback
-} from '@decorators';
+} from '../../decorators';
 
 const COLLECTION_NAME = 'your_collection_name';
 
